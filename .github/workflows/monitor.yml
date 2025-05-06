@@ -19,7 +19,7 @@ jobs:
       - name: Check WMTS CRS == 3857 🔎
         run: |
           mkdir output
-          for i in `cat endpoints.txt | sed -e 's/(\?.*)/\\1REQUEST=GetCapabilities&SERVICE=WMTS/'` ; do echo testing $i ... ; curl $i | grep -e '/EPSG:(.*:)?(3857)</' && echo $i >> output/result.txt ; done
+          for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo testing $i ... ; curl $i | grep -e '/EPSG:(.*:)?(3857)</' && echo $i >> output/result.txt ; done
       - name: Upload Pages artifact
         id: upload
         uses: actions/upload-pages-artifact@v3
