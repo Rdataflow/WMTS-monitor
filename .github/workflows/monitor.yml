@@ -1,4 +1,4 @@
-name: Cube Monitor
+name: WMTS Monitor
 
 on:
   workflow_dispatch:
