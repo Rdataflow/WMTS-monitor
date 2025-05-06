@@ -19,7 +19,7 @@ jobs:
       - name: Check WMTS support CRS `EPSG:3857` 🔎
         run: |
           mkdir -p output
-          echo '<h1>WMTS endpoints supporting EPSG:3857</h1><p><a src="result.txt">raw results<a></p><pre>' > output/index.html
+          echo '<h1>WMTS endpoints supporting EPSG:3857</h1><p><a href="result.txt">raw results<a></p><pre>' > output/index.html
           for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo -n testing $i ... | tee -a output/index.html ; curl -s -L $i | grep -e 'EPSG:\(.*:\)\?\(3857\)</' > /dev/null && echo $i >> output/result.txt && echo ✅ | tee -a output/index.html || echo ❌ | tee -a output/index.html ; done
           cat output/result.txt
       - name: Upload Pages artifact
