@@ -33,7 +33,7 @@ jobs:
             VALID=$(($VALID+1)) && echo $i >> output/result_cors.txt && echo -n ✅ | tee -a output/index.html || echo -n ❌ | tee -a output/index.html
             grep -e 'EPSG:\(.*:\)\?\(3857\)</' query.log > /dev/null && \
             VALID=$(($VALID+1)) && echo $i >> output/result_epsg3857.txt && echo ✅ | tee -a output/index.html || echo ❌ | tee -a output/index.html
-            [ $VALID -eq 2 ] && >> output/result.txt
+            [ $VALID -eq 2 ] && echo $i >> output/result.txt
           done
           echo === cors ===
           cat output/result_cors.txt
