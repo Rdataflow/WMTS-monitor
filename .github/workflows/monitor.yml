@@ -20,7 +20,7 @@ jobs:
         run: |
           mkdir -p output
           echo '<h1>WMTS endpoints supporting EPSG:3857</h1><pre>' > output/index.html
-          for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo -n testing $i ... | tee output/index.html ; curl -s -L $i | grep -e 'EPSG:\(.*:\)\?\(3857\)</' > /dev/null && echo $i >> output/result.txt && echo ✅ | tee output/index.html || echo ❌ | tee output/index.html ; done
+          for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo -n testing $i ... | tee -a output/index.html ; curl -s -L $i | grep -e 'EPSG:\(.*:\)\?\(3857\)</' > /dev/null && echo $i >> output/result.txt && echo ✅ | tee -a output/index.html || echo ❌ | tee -a output/index.html ; done
           cat output/result.txt
       - name: Upload Pages artifact
         id: upload
