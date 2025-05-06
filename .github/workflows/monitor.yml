@@ -16,10 +16,11 @@ jobs:
       - name: Get list of Endpoints 📍
         run: |
           until `[ -s endpoints.txt ]` ; do curl -s -L https://github.com/geoadmin/web-mapviewer/raw/refs/heads/develop/packages/mapviewer/src/modules/menu/components/advancedTools/ImportCatalogue/external-providers.json | jq -r '.[]' | grep -i 'wmts'  > endpoints.txt || sleep 2 ; done
-      - name: Check WMTS CRS == 3857 🔎
+      - name: Check WMTS support CRS `EPSG:3857` 🔎
         run: |
           mkdir -p output
-          for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo -n testing $i ... ; curl -s -L $i | grep -e 'EPSG:\(.*:\)\?\(3857\)</' > /dev/null && echo $i >> output/result.txt && echo ✅ || echo ❌ ; done
+          echo '<h1>WMTS endpoints supporting EPSG:3857</h1><pre>' > output/index.html
+          for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo -n testing $i ... | tee output/index.html ; curl -s -L $i | grep -e 'EPSG:\(.*:\)\?\(3857\)</' > /dev/null && echo $i >> output/result.txt && echo ✅ | tee output/index.html || echo ❌ | tee output/index.html ; done
           cat output/result.txt
       - name: Upload Pages artifact
         id: upload
