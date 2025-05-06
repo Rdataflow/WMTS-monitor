@@ -1,0 +1,45 @@
+name: Cube Monitor
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 3 * * 1'
+
+jobs:
+  monitor:
+    name: Monitor WMTS endpoints 📍
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get list of Endpoints 📍
+        run: |
+          until `[ -s endpoints.txt ]` ; do curl https://github.com/geoadmin/web-mapviewer/raw/refs/heads/develop/packages/mapviewer/src/modules/menu/components/advancedTools/ImportCatalogue/external-providers.json | jq -r '.[]' | grep -i 'wmts'  > endpoints.txt || sleep 2 ; done
+      - name: Check WMTS CRS == 3857 🔎
+        run: |
+          mkdir output
+          for i in `cat endpoints.txt | sed -e 's/(\?.*)/\\1REQUEST=GetCapabilities&SERVICE=WMTS/'` ; do echo testing $i ... ; curl $i | grep -e '/EPSG:(.*:)?(3857)</' && echo $i >> output/result.txt ; done
+      - name: Upload Pages artifact
+        id: upload
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'output'
+          retention-days: 90
+
+  deploy:
+    name: Deploy result
+    needs: monitor
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
