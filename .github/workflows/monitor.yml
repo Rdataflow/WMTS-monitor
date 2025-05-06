@@ -15,11 +15,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Get list of Endpoints 📍
         run: |
-          until `[ -s endpoints.txt ]` ; do curl -L https://github.com/geoadmin/web-mapviewer/raw/refs/heads/develop/packages/mapviewer/src/modules/menu/components/advancedTools/ImportCatalogue/external-providers.json | jq -r '.[]' | grep -i 'wmts'  > endpoints.txt || sleep 2 ; done
+          until `[ -s endpoints.txt ]` ; do curl -s -L https://github.com/geoadmin/web-mapviewer/raw/refs/heads/develop/packages/mapviewer/src/modules/menu/components/advancedTools/ImportCatalogue/external-providers.json | jq -r '.[]' | grep -i 'wmts'  > endpoints.txt || sleep 2 ; done
       - name: Check WMTS CRS == 3857 🔎
         run: |
           mkdir output
-          for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo testing $i ... ; curl -L $i | grep -e '/EPSG:(.*:)?(3857)</' && echo $i >> output/result.txt ; done
+          for i in `cat endpoints.txt | sed -e 's/\(\?.*\)/\1\&REQUEST=GetCapabilites\&SERVICE=WMTS/'` ; do echo testing $i ... ; curl -s -L $i | grep -e 'EPSG:\(.*:\)?\(3857\)</' && echo $i >> output/result.txt ; done
       - name: Upload Pages artifact
         id: upload
         uses: actions/upload-pages-artifact@v3
